@@ -1,4 +1,7 @@
-Revision history for Perl extension Business-PayPoint
+Revision history for Business-PayPoint
+
+{{$NEXT}}
+        - Initial release
 
 0.01    2013.3.30
-        a start
+        - a start

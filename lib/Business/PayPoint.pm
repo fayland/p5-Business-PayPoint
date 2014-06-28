@@ -1,32 +1,14 @@
 package Business::PayPoint;
 
-# ABSTRACT: PayPoint online payment
-
 use strict;
+use 5.008_005;
+our $VERSION = '0.01';
 use warnings;
 use Carp 'croak';
 #use Data::Dumper;
 use XML::Writer;
 use SOAP::Lite;# +trace => 'all';
 use URI::Escape qw/uri_escape/;
-
-=pod
-
-=head1 SYNOPSIS
-
-    use Business::PayPoint;
-
-    my $bp = Business::PayPoint->new();
-    $bp->set_credentials($mid, $vpn_pass, $remote_pass);
-
-
-=head1 DESCRIPTION
-
-L<https://www.paypoint.net/assets/guides/Gateway_Freedom.pdf>
-
-=head2 METHODS
-
-=cut
 
 sub new {
     my $class = shift;
@@ -42,15 +24,6 @@ sub new {
     bless $args, $class;
 }
 
-=pod
-
-=head3 set_credentials
-
-    $bp->set_credentials($mid, $vpn_pass, $remote_pass);
-    # $bp->set_credentials('secpay', 'secpay', 'secpay');
-
-=cut
-
 sub set_credentials {
     my ($self, $mid, $vpn_pass, $remote_pass ) = @_;
 
@@ -59,23 +32,6 @@ sub set_credentials {
     $self->{__remote_pswd} = $remote_pass;
 }
 
-=pod
-
-=head3 validateCardFull
-
-    my %result = $bp->validateCardFull(
-        'trans_id' => 'tran0001',
-        'ip' => '127.0.0.1',
-        'name' => 'Mr Cardholder',
-        'card_number' => '4444333322221111',
-        'amount' => '50.00',
-        'expiry_date' => '0115',
-        'billing' => "name=Fred+Bloggs,company=Online+Shop+Ltd,addr_1=Dotcom+House,addr_2=London+Road,city=Townville,state=Countyshire,post_code=AB1+C23,tel=01234+567+890,fax=09876+543+210,email=somebody%40secpay.com,url=http%3A%2F%2Fwww.somedomain.com",
-        'options' => 'test_status=true,dups=false,card_type=Visa,cv2=123'
-    );
-
-=cut
-
 sub validateCardFull {
     my $self = shift;
     my $args  = @_ % 2 ? $_[0] : { @_ };
@@ -83,18 +39,6 @@ sub validateCardFull {
     my $ordered_keys = ['trans_id', 'ip', 'name', 'card_number', 'amount', 'expiry_date', 'issue_number', 'start_date', 'order', 'shipping', 'billing', 'options'];
     $self->_request('validateCardFull', $ordered_keys, $args);
 }
-
-=pod
-
-=head3 repeatCardFullAddr
-
-=head3 repeatCardFull
-
-=head3 refundCardFull
-
-=head3 releaseCardFull
-
-=cut
 
 sub repeatCardFullAddr {
     my $self = shift;
@@ -128,24 +72,6 @@ sub releaseCardFull {
     $self->_request('releaseCardFull', $ordered_keys, $args);
 }
 
-=pod
-
-=head3 getReport
-
-    my %report = $bp->getReport(
-        report_type => 'XML-Report',
-        cond_type   => 'TransId',
-        condition   => $trans_id,
-        currency    => 'GBP',
-        predicate   => '',
-        html        => 'false',
-        showErrs    => 'false'
-    );
-
-=head3 getTZReport
-
-=cut
-
 sub getReport {
     my $self = shift;
     my $args  = @_ % 2 ? $_[0] : { @_ };
@@ -162,14 +88,6 @@ sub getTZReport {
     $self->_request('getTZReport', $ordered_keys, $args);
 }
 
-=pod
-
-=head3 threeDSecureEnrolmentRequest
-
-=head3 threeDSecureAuthorisationRequest
-
-=cut
-
 sub threeDSecureEnrolmentRequest {
     my $self = shift;
     my $args  = @_ % 2 ? $_[0] : { @_ };
@@ -185,12 +103,6 @@ sub threeDSecureAuthorisationRequest {
     my $ordered_keys = ['trans_id', 'md', 'paRes', 'options'];
     $self->_request('threeDSecureAuthorisationRequest', $ordered_keys, $args);
 }
-
-=pod
-
-=head3 performTransactionViaAlternatePaymentMethod
-
-=cut
 
 sub performTransactionViaAlternatePaymentMethod {
     my $self = shift;
@@ -248,3 +160,88 @@ sub _request {
 }
 
 1;
+__END__
+
+=encoding utf-8
+
+=head1 NAME
+
+Business::PayPoint - PayPoint online payment
+
+=head1 SYNOPSIS
+
+    use Business::PayPoint;
+
+    my $bp = Business::PayPoint->new();
+    $bp->set_credentials($mid, $vpn_pass, $remote_pass);
+
+=head1 DESCRIPTION
+
+L<https://www.paypoint.net/assets/guides/Gateway_Freedom.pdf>
+
+=head2 METHODS
+
+=pod
+
+=head3 set_credentials
+
+    $bp->set_credentials($mid, $vpn_pass, $remote_pass);
+    # $bp->set_credentials('secpay', 'secpay', 'secpay');
+
+=head3 validateCardFull
+
+    my %result = $bp->validateCardFull(
+        'trans_id' => 'tran0001',
+        'ip' => '127.0.0.1',
+        'name' => 'Mr Cardholder',
+        'card_number' => '4444333322221111',
+        'amount' => '50.00',
+        'expiry_date' => '0115',
+        'billing' => "name=Fred+Bloggs,company=Online+Shop+Ltd,addr_1=Dotcom+House,addr_2=London+Road,city=Townville,state=Countyshire,post_code=AB1+C23,tel=01234+567+890,fax=09876+543+210,email=somebody%40secpay.com,url=http%3A%2F%2Fwww.somedomain.com",
+        'options' => 'test_status=true,dups=false,card_type=Visa,cv2=123'
+    );
+
+=head3 repeatCardFullAddr
+
+=head3 repeatCardFull
+
+=head3 refundCardFull
+
+=head3 releaseCardFull
+
+=head3 getReport
+
+    my %report = $bp->getReport(
+        report_type => 'XML-Report',
+        cond_type   => 'TransId',
+        condition   => $trans_id,
+        currency    => 'GBP',
+        predicate   => '',
+        html        => 'false',
+        showErrs    => 'false'
+    );
+
+=head3 getTZReport
+
+=head3 threeDSecureEnrolmentRequest
+
+=head3 threeDSecureAuthorisationRequest
+
+=head3 performTransactionViaAlternatePaymentMethod
+
+=head1 AUTHOR
+
+Fayland Lam E<lt>fayland@gmail.comE<gt>
+
+=head1 COPYRIGHT
+
+Copyright 2014- Fayland Lam
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=head1 SEE ALSO
+
+=cut
